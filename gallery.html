@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Gallery | Antonio Riyanto</title>
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        /* Base & Smooth Scrolling */
+        html { scroll-behavior: smooth; }
+        
+        body {
+            background-color: #030303;
+            color: #e5e5e5;
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+        ::selection {
+            background-color: rgba(0, 240, 255, 0.3);
+        }
+        /* Custom Gradients & Glassmorphism */
+        .text-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-gradient-accent {
+            background: linear-gradient(135deg, #00f0ff 0%, #0057ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Vanilla JS Animation Classes */
+        .fade-in-element {
+            transition-property: opacity, transform;
+            transition-duration: 1000ms;
+            transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+            will-change: transform, opacity;
+            opacity: 0;
+            transform: translateY(3rem);
+        }
+        .fade-in-element.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Gallery Image Hover Effect */
+        .masonry-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            cursor: pointer;
+        }
+        .masonry-item img {
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .masonry-item:hover img {
+            transform: scale(1.05);
+        }
+        .masonry-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .masonry-item:hover::after {
+            opacity: 1;
+        }
+        .masonry-caption {
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 10;
+        }
+        .masonry-item:hover .masonry-caption {
+            bottom: 0;
+            opacity: 1;
+        }
+
+        /* Hide scrollbar for cleaner look */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #030303; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+</head>
+<body class="min-h-screen overflow-x-hidden relative">
+    
+    <!-- Ambient Background Glows -->
+    <div class="fixed top-0 left-1/4 w-[50vw] h-[50vw] bg-[#0057ff] rounded-full blur-[200px] opacity-[0.05] pointer-events-none z-0"></div>
+    <div class="fixed bottom-0 right-1/4 w-[40vw] h-[40vw] bg-[#00f0ff] rounded-full blur-[150px] opacity-[0.05] pointer-events-none z-0"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-6 bg-transparent">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-12 flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold tracking-tighter text-white flex items-center gap-2 group">
+                <div class="w-8 h-8 rounded-full glass-panel flex items-center justify-center group-hover:bg-[#00f0ff] group-hover:text-black transition-colors">
+                    <i class="ph ph-arrow-left"></i>
+                </div>
+                <span class="text-sm font-medium ml-2">Back to Main</span>
+            </a>
+            <div class="hidden md:flex gap-8 text-sm font-medium text-neutral-400">
+                <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-[#00f0ff] to-[#0057ff]"></div>
+                <span class="text-white font-bold tracking-tighter">Antonio.</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="relative z-10 pt-32 pb-24 max-w-[1400px] mx-auto px-6 md:px-12">
+        
+        <!-- Header -->
+        <div class="mb-16 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div class="max-w-2xl">
+                <div class="fade-in-element inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-6">
+                    <span class="w-2 h-2 rounded-full bg-[#00f0ff] animate-pulse"></span>
+                    <span class="text-xs font-medium tracking-wide uppercase text-neutral-300">Curated Archive</span>
+                </div>
+                <h1 class="fade-in-element text-5xl md:text-7xl font-extrabold tracking-tighter leading-[1.1] mb-6" style="transition-delay: 100ms;">
+                    Visual <span class="text-gradient-accent italic">Gallery.</span>
+                </h1>
+                <p class="fade-in-element text-neutral-400 text-lg leading-relaxed" style="transition-delay: 200ms;">
+                    A full visual exploration of my work across print, digital, and motion. Click any image to view in high resolution.
+                </p>
+            </div>
+            
+            <!-- Optional Filters (Visual only for now) -->
+            <div class="fade-in-element hidden md:flex flex-wrap gap-3 pb-2" style="transition-delay: 300ms;">
+                <span class="px-4 py-2 rounded-full text-xs font-medium bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/30 cursor-pointer">All Work</span>
+                <span class="px-4 py-2 rounded-full text-xs font-medium glass-panel text-neutral-400 hover:text-white cursor-pointer transition-colors">Campaigns</span>
+                <span class="px-4 py-2 rounded-full text-xs font-medium glass-panel text-neutral-400 hover:text-white cursor-pointer transition-colors">Digital</span>
+            </div>
+        </div>
+
+        <!-- MASONRY GRID -->
+        <div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6" id="masonry-gallery">
+            
+            <!-- Real Uploaded Images -->
+            <div class="masonry-item fade-in-element break-inside-avoid glass-panel border border-white/5 shadow-2xl">
+                <img src="WhatsApp Image 2026-04-22 at 16.25.30.jpg" alt="Watch Club Sale Campaign - Orange Variant">
+                <div class="masonry-caption">
+                    <h3 class="text-white font-bold text-lg leading-tight mb-1">Watch Club Sale</h3>
+                    <p class="text-[#00f0ff] text-xs uppercase tracking-wider font-semibold">Campaign Asset</p>
+                </div>
+            </div>
+
+            <div class="masonry-item fade-in-element break-inside-avoid glass-panel border border-white/5 shadow-2xl" style="transition-delay: 100ms;">
+                <img src="WhatsApp Image 2026-04-13 at 14.04.34.jpg" alt="Jaguar Promo Key Visual">
+                <div class="masonry-caption">
+                    <h3 class="text-white font-bold text-lg leading-tight mb-1">Jaguar Original</h3>
+                    <p class="text-[#00f0ff] text-xs uppercase tracking-wider font-semibold">Social Media</p>
+                </div>
+            </div>
+
+            <div class="masonry-item fade-in-element break-inside-avoid glass-panel border border-white/5 shadow-2xl" style="transition-delay: 200ms;">
+                <img src="WhatsApp Image 2026-04-10 at 16.42.33.jpeg" alt="Botani Square Store Promotion">
+                <div class="masonry-caption">
+                    <h3 class="text-white font-bold text-lg leading-tight mb-1">Store Promotion</h3>
+                    <p class="text-[#00f0ff] text-xs uppercase tracking-wider font-semibold">Retail Display</p>
+                </div>
+            </div>
+
+            <div class="masonry-item fade-in-element break-inside-avoid glass-panel border border-white/5 shadow-2xl" style="transition-delay: 300ms;">
+                <img src="WhatsApp Image 2026-04-22 at 16.25.30 (1).jpeg" alt="Watch Club Sale Campaign - Red Variant">
+                <div class="masonry-caption">
+                    <h3 class="text-white font-bold text-lg leading-tight mb-1">Festive Sale</h3>
+                    <p class="text-[#00f0ff] text-xs uppercase tracking-wider font-semibold">Digital Banner</p>
+                </div>
+            </div>
+
+            <div class="masonry-item fade-in-element break-inside-avoid glass-panel border border-white/5 shadow-2xl" style="transition-delay: 400ms;">
+                <img src="WhatsApp Image 2026-04-13 at 14.04.35.jpg" alt="Watch Club Website Mockup">
+                <div class="masonry-caption">
+                    <h3 class="text-white font-bold text-lg leading-tight mb-1">E-Commerce Mockup</h3>
+                    <p class="text-[#00f0ff] text-xs uppercase tracking-wider font-semibold">Web Design</p>
+                </div>
+            </div>
+
+            <div class="masonry-item fade-in-element break-inside-avoid glass-panel border border-white/5 shadow-2xl" style="transition-delay: 500ms;">
+                <img src="WhatsApp Image 2026-04-22 at 16.25.30 (2).jpeg" alt="Watch Club Sale Campaign - Blue Variant">
+                <div class="masonry-caption">
+                    <h3 class="text-white font-bold text-lg leading-tight mb-1">Corporate Promo</h3>
+                    <p class="text-[#00f0ff] text-xs uppercase tracking-wider font-semibold">Key Visual</p>
+                </div>
+            </div>
+
+            <div class="masonry-item fade-in-element break-inside-avoid glass-panel border border-white/5 shadow-2xl" style="transition-delay: 100ms;">
+                <img src="WhatsApp Image 2026-04-13 at 14.04.34 (1).jpg" alt="Jaguar Detailed Features">
+                <div class="masonry-caption">
+                    <h3 class="text-white font-bold text-lg leading-tight mb-1">Product Details</h3>
+                    <p class="text-[#00f0ff] text-xs uppercase tracking-wider font-semibold">Infographic</p>
+                </div>
+            </div>
+
+            <!-- Placeholders for other previous works to fill the masonry -->
+            <div class="masonry-item fade-in-element break-inside-avoid glass-panel border border-white/5 shadow-2xl">
+                <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=800&auto=format&fit=crop" alt="PT Sahabat Petmu Social Media">
+                <div class="masonry-caption">
+                    <h3 class="text-white font-bold text-lg leading-tight mb-1">Petmu Social Series</h3>
+                    <p class="text-neutral-400 text-xs uppercase tracking-wider font-semibold">Content Creation</p>
+                </div>
+            </div>
+
+            <div class="masonry-item fade-in-element break-inside-avoid glass-panel border border-white/5 shadow-2xl">
+                <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=800&auto=format&fit=crop" alt="Rata Kanan Branding">
+                <div class="masonry-caption">
+                    <h3 class="text-white font-bold text-lg leading-tight mb-1">Brand Identity Setup</h3>
+                    <p class="text-neutral-400 text-xs uppercase tracking-wider font-semibold">Rata Kanan Creative</p>
+                </div>
+            </div>
+
+            <div class="masonry-item fade-in-element break-inside-avoid glass-panel border border-white/5 shadow-2xl">
+                <img src="https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?q=80&w=800&auto=format&fit=crop" alt="Mindo Social Post">
+                <div class="masonry-caption">
+                    <h3 class="text-white font-bold text-lg leading-tight mb-1">Client Content Execution</h3>
+                    <p class="text-neutral-400 text-xs uppercase tracking-wider font-semibold">PT Mindo</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- LIGHTBOX MODAL (For Full Zoom) -->
+    <div id="lightbox" class="fixed inset-0 z-[200] hidden bg-[#030303]/95 items-center justify-center backdrop-blur-2xl transition-opacity duration-300 opacity-0" onclick="if(event.target === this) closeLightbox()">
+        
+        <!-- Top Bar -->
+        <div class="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-50 bg-gradient-to-b from-black/80 to-transparent">
+            <div class="text-neutral-400 text-sm font-medium tracking-widest uppercase"><span id="lightbox-counter">1 / 10</span></div>
+            <button onclick="closeLightbox()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-[#00f0ff] hover:text-black text-white flex items-center justify-center transition-all">
+                <i class="ph ph-x text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Nav Buttons -->
+        <button onclick="changeLightbox(-1)" class="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 text-white hover:text-black transition-all w-12 h-12 flex items-center justify-center z-50 bg-white/10 hover:bg-[#00f0ff] rounded-full border border-white/10 shadow-2xl hover:scale-110">
+            <i class="ph ph-caret-left text-2xl"></i>
+        </button>
+        <button onclick="changeLightbox(1)" class="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 text-white hover:text-black transition-all w-12 h-12 flex items-center justify-center z-50 bg-white/10 hover:bg-[#00f0ff] rounded-full border border-white/10 shadow-2xl hover:scale-110">
+            <i class="ph ph-caret-right text-2xl"></i>
+        </button>
+
+        <!-- Image Container -->
+        <div class="relative w-full max-w-7xl px-4 md:px-24 flex flex-col items-center justify-center h-full" onclick="event.stopPropagation()">
+            <img id="lightbox-img" src="" alt="Zoomed Portfolio" class="max-w-full max-h-[85vh] object-contain rounded-xl shadow-[0_0_80px_rgba(0,0,0,0.8)] transition-all duration-300">
+            
+            <div class="absolute bottom-10 left-0 right-0 text-center">
+                <h3 id="lightbox-title" class="text-white text-2xl font-bold mb-1 drop-shadow-lg"></h3>
+                <p id="lightbox-category" class="text-[#00f0ff] text-sm font-semibold tracking-widest uppercase drop-shadow-md"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5 bg-[#030303] relative z-10 mt-12">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-4 h-4 rounded-full bg-gradient-to-tr from-[#00f0ff] to-[#0057ff]"></div>
+                <span class="font-bold tracking-tighter text-lg">Antonio.</span>
+            </div>
+            <p class="text-neutral-500 text-sm">© 2026 Antonio Riyanto. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JS Logic -->
+    <script>
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-4', 'glass-panel', 'bg-[#030303]/80');
+                navbar.classList.remove('py-6', 'bg-transparent');
+            } else {
+                navbar.classList.remove('py-4', 'glass-panel', 'bg-[#030303]/80');
+                navbar.classList.add('py-6', 'bg-transparent');
+            }
+        });
+
+        // Intersection Observer
+        const fadeElements = document.querySelectorAll('.fade-in-element');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { root: null, rootMargin: '0px', threshold: 0.1 });
+        fadeElements.forEach(el => observer.observe(el));
+
+        // Lightbox System
+        let galleryData = [];
+        let currentIndex = 0;
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxTitle = document.getElementById('lightbox-title');
+        const lightboxCategory = document.getElementById('lightbox-category');
+        const lightboxCounter = document.getElementById('lightbox-counter');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const items = document.querySelectorAll('.masonry-item');
+            
+            // Extract data from HTML
+            items.forEach((item, index) => {
+                const img = item.querySelector('img');
+                const title = item.querySelector('h3').innerText;
+                const category = item.querySelector('p').innerText;
+                
+                galleryData.push({ src: img.src, title: title, category: category });
+                
+                // Add click listener to open
+                item.addEventListener('click', () => openLightbox(index));
+            });
+        });
+
+        function openLightbox(index) {
+            currentIndex = index;
+            updateLightboxContent();
+            
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
+            setTimeout(() => lightbox.classList.remove('opacity-0'), 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.add('opacity-0');
+            setTimeout(() => {
+                lightbox.classList.add('hidden');
+                lightbox.classList.remove('flex');
+            }, 300);
+            document.body.style.overflow = 'visible';
+        }
+
+        function changeLightbox(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = galleryData.length - 1;
+            if (currentIndex >= galleryData.length) currentIndex = 0;
+            
+            lightboxImg.style.opacity = '0';
+            lightboxImg.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                updateLightboxContent();
+                lightboxImg.style.opacity = '1';
+                lightboxImg.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function updateLightboxContent() {
+            lightboxImg.src = galleryData[currentIndex].src;
+            lightboxTitle.innerText = galleryData[currentIndex].title;
+            lightboxCategory.innerText = galleryData[currentIndex].category;
+            lightboxCounter.innerText = `${currentIndex + 1} / ${galleryData.length}`;
+        }
+
+        // Keyboard Nav
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('hidden')) {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') changeLightbox(-1);
+                if (e.key === 'ArrowRight') changeLightbox(1);
+            }
+        });
+    </script>
+</body>
+</html>
